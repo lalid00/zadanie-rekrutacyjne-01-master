@@ -30,6 +30,10 @@ public class Kontrahent {
         this.nip = nip;
     }
 
+    public String getNip() {
+        return nip;
+    }
+
     @Override
     public String toString() {
         return "Kontrahent{" +
