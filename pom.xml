@@ -140,6 +140,11 @@
             <scope>import</scope>
         </dependency>
         <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-cdi</artifactId>
+            <version>12.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.199</version>
@@ -155,6 +160,11 @@
                     <artifactId>hamcrest-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.3.1</version>
         </dependency>
     </dependencies>
 

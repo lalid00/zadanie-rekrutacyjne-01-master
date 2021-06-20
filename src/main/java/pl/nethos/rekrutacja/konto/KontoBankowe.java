@@ -85,4 +85,21 @@ public class KontoBankowe {
     public Date getDataWeryfikacji() {
         return dataWeryfikacji;
     }
+
+    public String getFormattedNumer(){
+        String numerToFormat = numer;
+        String formattedNumer = "";
+
+        String firstTwo = numerToFormat.substring(0,2);
+        formattedNumer += firstTwo + " ";
+        numerToFormat = numerToFormat.substring(2,numerToFormat.length());
+
+        while(numerToFormat.length()> 0){
+            String nextFour = numerToFormat.substring(0,4);
+            formattedNumer += nextFour + " ";
+            numerToFormat = numerToFormat.substring(4,numerToFormat.length());
+        }
+
+        return formattedNumer;
+    }
 }

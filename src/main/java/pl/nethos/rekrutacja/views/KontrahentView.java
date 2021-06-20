@@ -1,30 +1,34 @@
 package pl.nethos.rekrutacja.views;
 
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.nethos.rekrutacja.konto.KontoBankowe;
 import pl.nethos.rekrutacja.konto.KontoBankoweRepository;
-import pl.nethos.rekrutacja.kontrahent.KontrahentRepository;
+import com.vaadin.flow.component.button.Button;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 @Route("ListaKontKontrahenta")
 public class KontrahentView extends VerticalLayout {
 
-    private int kontrahentId;
+    private long kontrahentId = 3;
 
-    public void setKontrahentId(int kontrahentId) {
+    public void setKontrahentId(long kontrahentId) {
         this.kontrahentId = kontrahentId;
     }
 
-    public KontrahentView(@Autowired KontoBankoweRepository kontoBankoweRepository){
+    @Autowired
+    public KontrahentView( KontoBankoweRepository kontoBankoweRepository){
         setSizeFull();
 
-        wyswietl(kontoBankoweRepository,3);
+        wyswietl(kontoBankoweRepository,kontrahentId);
     }
 
     private void wyswietl(KontoBankoweRepository kontoBankoweRepository, long kontrahentId) {
@@ -40,10 +44,32 @@ public class KontrahentView extends VerticalLayout {
             }
         }
         kontoBankoweGrid.setItems(kontoBankoweKontrahentaList);
-        kontoBankoweGrid.addColumn(KontoBankowe::getNumer).setHeader("Numer");
-        kontoBankoweGrid.addColumn(KontoBankowe::isAktywne).setHeader("Aktywne");
-        kontoBankoweGrid.addColumn(KontoBankowe::isDomyslne).setHeader("Domyslne");
-        kontoBankoweGrid.addColumn(KontoBankowe::isWirtualne).setHeader("Wirtualne");
+        kontoBankoweGrid.addColumn(KontoBankowe::getFormattedNumer).setHeader("Numer").setFlexGrow(2).setTextAlign(ColumnTextAlign.CENTER);
+        kontoBankoweGrid.addColumn(KontoBankowe::isAktywne).setHeader("Aktywne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
+        kontoBankoweGrid.addColumn(KontoBankowe::isDomyslne).setHeader("Domyslne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
+        kontoBankoweGrid.addColumn(KontoBankowe::isWirtualne).setHeader("Wirtualne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
+        kontoBankoweGrid.addComponentColumn(item -> createVerifyButton(item)).setHeader("Button").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         add(kontoBankoweGrid);
+    }
+    private Button createVerifyButton(KontoBankowe item) {
+        String stan = item.getStanWeryfikacji();
+        String stanWeryfikacji;
+
+        if(stan == null){
+            stanWeryfikacji = "nieokreslony";
+        } else if (stan.equals("0")){
+            stanWeryfikacji = "bledne konto";
+        } else {
+            stanWeryfikacji = "zweryfikowany";
+        }
+
+        @SuppressWarnings("unchecked")
+        Button button = new Button(stanWeryfikacji, buttonClickEvent -> verifyAccount(item));
+        return button;
+    }
+
+    private void verifyAccount(KontoBankowe kontoBankowe){
+        Notification.show("Button clicked: " + kontoBankowe.getId());
+
     }
 }
