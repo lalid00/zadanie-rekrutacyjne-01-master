@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import pl.nethos.rekrutacja.konto.KontoBankowe;
 import pl.nethos.rekrutacja.konto.KontoBankoweRepository;
 import com.vaadin.flow.component.button.Button;
+import pl.nethos.rekrutacja.konto.KontoBankoweService;
+import pl.nethos.rekrutacja.kontrahent.Kontrahent;
+import pl.nethos.rekrutacja.kontrahent.KontrahentRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -20,22 +23,25 @@ import java.util.List;
 
 
 @Route("ListaKontKontrahenta")
-public class KontrahentView extends VerticalLayout implements HasUrlParameter<Long>, BeforeEnterListener {
+public class KontrahentView extends VerticalLayout implements HasUrlParameter<Long>{
 
 
 
 
     @Autowired
-    public KontrahentView( KontoBankoweRepository kontoBankoweRepository){
+    public KontrahentView(KontoBankoweRepository kontoBankoweRepository, KontrahentRepository kontrahentRepository){
         setSizeFull();
 
-        wyswietl(kontoBankoweRepository);
+        wyswietl(kontoBankoweRepository,kontrahentRepository);
     }
 
-    private void wyswietl(KontoBankoweRepository kontoBankoweRepository) throws NumberFormatException{
+    private void wyswietl(KontoBankoweRepository kontoBankoweRepository,KontrahentRepository kontrahentRepository) throws NumberFormatException{
 
+        List<Kontrahent> kontrahentList = new ArrayList<>(kontrahentRepository.all());
         List<KontoBankowe> kontoBankoweList = new ArrayList<>(kontoBankoweRepository.all());
         List<KontoBankowe> kontoBankoweKontrahentaList = new ArrayList<>();
+
+        KontoBankoweService service = new KontoBankoweService();
 
         Grid<KontoBankowe> kontoBankoweGrid = new Grid<>();
 
@@ -46,40 +52,36 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
                 kontoBankoweKontrahentaList.add(kontoBankoweList.get(i));
             }
         }
+
         kontoBankoweGrid.setItems(kontoBankoweKontrahentaList);
         kontoBankoweGrid.addColumn(KontoBankowe::getFormattedNumer).setHeader("Numer").setFlexGrow(2).setTextAlign(ColumnTextAlign.CENTER);
         kontoBankoweGrid.addColumn(KontoBankowe::isAktywne).setHeader("Aktywne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         kontoBankoweGrid.addColumn(KontoBankowe::isDomyslne).setHeader("Domyslne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         kontoBankoweGrid.addColumn(KontoBankowe::isWirtualne).setHeader("Wirtualne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
-        kontoBankoweGrid.addComponentColumn(this::createVerifyButton).setHeader("Button").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
+        kontoBankoweGrid.addComponentColumn(item -> createVerifyButton(item,kontrahentList.get((int) (item.getIdKontrahent()-1)),kontoBankoweRepository,kontrahentRepository, service)).setHeader("Button").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         add(kontoBankoweGrid);
     }
-    private Button createVerifyButton(KontoBankowe item) {
-        String stan = item.getStanWeryfikacji();
+    private Button createVerifyButton(KontoBankowe kontoBankowe, Kontrahent kontrahent, KontoBankoweRepository kontoBankoweRepository, KontrahentRepository kontrahentRepository, KontoBankoweService service) {
+        String stan = kontoBankowe.getStanWeryfikacji();
         String stanWeryfikacji;
 
         if(stan == null){
             stanWeryfikacji = "nieokreslony";
-        } else if (stan.equals("2")){
+        } else if (stan.equals("0")){
             stanWeryfikacji = "bledne konto";
         } else {
             stanWeryfikacji = "zweryfikowany";
         }
         String date = "";
-        if(item.getDataWeryfikacji() == null){
+        if(kontoBankowe.getDataWeryfikacji() == null){
             date = "Brak weryfikacji";
         } else {
-            date = item.getDataWeryfikacji().toString();
+            date = kontoBankowe.getDataWeryfikacji().toString();
         }
         @SuppressWarnings("unchecked")
-        Button button = new Button(stanWeryfikacji, buttonClickEvent -> verifyAccount(item));
+        Button button = new Button(stanWeryfikacji, buttonClickEvent -> service.verifyAccount(kontoBankowe, kontrahent, kontoBankoweRepository,kontrahentRepository,service));
         button.getElement().setProperty("title",date);
         return button;
-    }
-
-    private void verifyAccount(KontoBankowe kontoBankowe){
-        Notification.show("Button clicked: " + kontoBankowe.getId());
-        updateDatabase(kontoBankowe,"1");
     }
 
     private void updateDatabase(KontoBankowe kontoBankowe, String stanWeryfikacji){
@@ -90,13 +92,10 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
     public void setParameter(BeforeEvent event, Long parameter) throws NumberFormatException{
     }
 
-    @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-    }
-
     public String getIdFromUrl(){
         HttpServletRequest httpServletRequest = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest();
         String id = httpServletRequest.getRequestURL().toString();
         return id.substring(id.length()-1);
     }
+
 }

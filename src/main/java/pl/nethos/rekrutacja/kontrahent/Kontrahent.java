@@ -34,6 +34,7 @@ public class Kontrahent {
         return nip;
     }
 
+
     @Override
     public String toString() {
         return "Kontrahent{" +

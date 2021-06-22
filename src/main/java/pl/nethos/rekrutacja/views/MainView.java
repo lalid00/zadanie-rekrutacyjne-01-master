@@ -11,6 +11,8 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.nethos.rekrutacja.kontrahent.Kontrahent;
 import pl.nethos.rekrutacja.kontrahent.KontrahentRepository;
@@ -22,6 +24,7 @@ import java.util.List;
 @PWA(name = "Nethos - Zadanie rekrutacyjne na stanowisko programisty", shortName = "Nethos - Rekrutacja")
 @Theme(value = Lumo.class, variant = Lumo.DARK)
 public class MainView extends VerticalLayout {
+    Logger log = LoggerFactory.getLogger(MainView.class);
 
     @Autowired
     public MainView(KontrahentRepository kontrahentRepository) {
@@ -40,9 +43,9 @@ public class MainView extends VerticalLayout {
         kontrahentGrid.addColumn(Kontrahent::getNip).setHeader("NIP");
         kontrahentGrid.addItemDoubleClickListener(event -> {
 
-            String kontrahentId = String.valueOf(event.getItem().getId());
-
-            UI.getCurrent().navigate("ListaKontKontrahenta" + "/" + kontrahentId);
+            //String kontrahentId = String.valueOf(event.getItem().getId());
+            log.info("Navigating to kontrahent with accurate ID");
+            UI.getCurrent().navigate("ListaKontKontrahenta/" + event.getItem().getId());
             UI.getCurrent().getPage().reload();
 
         });
