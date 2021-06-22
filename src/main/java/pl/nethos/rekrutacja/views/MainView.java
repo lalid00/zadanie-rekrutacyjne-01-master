@@ -22,12 +22,7 @@ import java.util.List;
 @PWA(name = "Nethos - Zadanie rekrutacyjne na stanowisko programisty", shortName = "Nethos - Rekrutacja")
 @Theme(value = Lumo.class, variant = Lumo.DARK)
 public class MainView extends VerticalLayout {
-    long kontrahentId;
 
-
-    public long getKontrahentId() {
-        return kontrahentId;
-    }
     @Autowired
     public MainView(KontrahentRepository kontrahentRepository) {
         setSizeFull();
@@ -35,7 +30,7 @@ public class MainView extends VerticalLayout {
         wyswietl(kontrahentRepository);
     }
 
-    private void wyswietl(KontrahentRepository kontrahentRepository) {
+    private void wyswietl(KontrahentRepository kontrahentRepository) throws NumberFormatException{
         List<Kontrahent> kontrahentList = new ArrayList<>(kontrahentRepository.all());
         Grid<Kontrahent> kontrahentGrid = new Grid<>();
 
@@ -45,11 +40,10 @@ public class MainView extends VerticalLayout {
         kontrahentGrid.addColumn(Kontrahent::getNip).setHeader("NIP");
         kontrahentGrid.addItemDoubleClickListener(event -> {
 
-            kontrahentId = event.getItem().getId();
+            String kontrahentId = String.valueOf(event.getItem().getId());
 
-
-
-            UI.getCurrent().navigate("ListaKontKontrahenta");
+            UI.getCurrent().navigate("ListaKontKontrahenta" + "/" + kontrahentId);
+            UI.getCurrent().getPage().reload();
 
         });
 
