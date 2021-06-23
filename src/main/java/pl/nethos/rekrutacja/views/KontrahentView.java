@@ -1,5 +1,6 @@
 package pl.nethos.rekrutacja.views;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vaadin.flow.component.button.*;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
@@ -79,7 +80,13 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
             date = kontoBankowe.getDataWeryfikacji().toString();
         }
         @SuppressWarnings("unchecked")
-        Button button = new Button(stanWeryfikacji, buttonClickEvent -> service.verifyAccount(kontoBankowe, kontrahent, kontoBankoweRepository,kontrahentRepository,service));
+        Button button = new Button(stanWeryfikacji, buttonClickEvent -> {
+            try {
+                service.verifyAccount(kontoBankowe, kontrahent, service);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        });
         button.getElement().setProperty("title",date);
         return button;
     }
