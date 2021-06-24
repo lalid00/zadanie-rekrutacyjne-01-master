@@ -3,6 +3,7 @@ package pl.nethos.rekrutacja.konto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.notification.Notification;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,11 @@ public class KontoBankoweService {
         return whiteListDto;
     }
 
-    public void verifyAccount(KontoBankowe kontoBankowe, Kontrahent kontrahent,KontoBankoweService service) throws JsonProcessingException {
+    public void updateAccount(KontoBankowe kontoBankowe, Kontrahent kontrahent, KontoBankoweRepository kontoBankoweRepository, KontoBankoweService service) throws JsonProcessingException {
         Notification.show("Weryfikacja - ID kontrahenta: " + kontrahent.getId() + ", ID konta bankowego: " + kontoBankowe.getId());
         log.info("Button for account with id " + kontoBankowe.getId() + " clicked");
-        service.validateKontoBankowe(kontoBankowe,kontrahent);
+        //WhiteListDto whiteListDto = service.validateKontoBankowe(kontoBankowe,kontrahent);
+        kontoBankoweRepository.updateStatus(kontoBankowe);
 
     }
 
@@ -36,4 +38,8 @@ public class KontoBankoweService {
         WhiteListDto response = validateKontoBankowe(kontoBankowe, kontrahent);
 
     }
+    public void updateKontoBankowe(KontoBankowe kontoBankowe, WhiteListDto whiteListDto){
+
+    }
+
 }

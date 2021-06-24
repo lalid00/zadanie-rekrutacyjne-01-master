@@ -1,10 +1,8 @@
 package pl.nethos.rekrutacja.views;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vaadin.flow.component.button.*;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.VaadinService;
@@ -82,7 +80,7 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
         @SuppressWarnings("unchecked")
         Button button = new Button(stanWeryfikacji, buttonClickEvent -> {
             try {
-                service.verifyAccount(kontoBankowe, kontrahent, service);
+                service.updateAccount(kontoBankowe, kontrahent,kontoBankoweRepository,service);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
