@@ -1,12 +1,7 @@
 package pl.nethos.rekrutacja.konto;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
+import java.time.LocalDateTime;
 
 @Entity
 public class KontoBankowe {
@@ -28,7 +23,7 @@ public class KontoBankowe {
 
     private String stanWeryfikacji;
 
-    private Date dataWeryfikacji;
+    private LocalDateTime dataWeryfikacji;
 
     public void setNumer(String numer) {
         this.numer = numer;
@@ -38,19 +33,11 @@ public class KontoBankowe {
         this.aktywne = aktywne;
     }
 
-    public void setDomyslne(boolean domyslne) {
-        this.domyslne = domyslne;
-    }
-
-    public void setWirtualne(boolean wirtualne) {
-        this.wirtualne = wirtualne;
-    }
-
     public void setStanWeryfikacji(String stanWeryfikacji) {
         this.stanWeryfikacji = stanWeryfikacji;
     }
 
-    public void setDataWeryfikacji(Date dataWeryfikacji) {
+    public void setDataWeryfikacji(LocalDateTime dataWeryfikacji) {
         this.dataWeryfikacji = dataWeryfikacji;
     }
 
@@ -82,7 +69,7 @@ public class KontoBankowe {
         return stanWeryfikacji;
     }
 
-    public Date getDataWeryfikacji() {
+    public LocalDateTime getDataWeryfikacji() {
         return dataWeryfikacji;
     }
 
@@ -92,12 +79,12 @@ public class KontoBankowe {
 
         String firstTwo = numerToFormat.substring(0,2);
         formattedNumer.append(firstTwo).append(" ");
-        numerToFormat = numerToFormat.substring(2,numerToFormat.length());
+        numerToFormat = numerToFormat.substring(2);
 
         while(numerToFormat.length()> 0){
             String nextFour = numerToFormat.substring(0,4);
             formattedNumer.append(nextFour).append(" ");
-            numerToFormat = numerToFormat.substring(4,numerToFormat.length());
+            numerToFormat = numerToFormat.substring(4);
         }
 
         return formattedNumer.toString();

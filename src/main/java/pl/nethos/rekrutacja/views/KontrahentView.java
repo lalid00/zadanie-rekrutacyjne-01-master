@@ -1,6 +1,7 @@
 package pl.nethos.rekrutacja.views;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -46,9 +47,9 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
 
         long kontrahentId = Long.parseLong(getIdFromUrl());
 
-        for(int i = 0; i < kontoBankoweList.size();i++){
-            if(kontoBankoweList.get(i).getIdKontrahent() == kontrahentId){
-                kontoBankoweKontrahentaList.add(kontoBankoweList.get(i));
+        for (KontoBankowe kontoBankowe : kontoBankoweList) {
+            if (kontoBankowe.getIdKontrahent() == kontrahentId) {
+                kontoBankoweKontrahentaList.add(kontoBankowe);
             }
         }
 
@@ -57,10 +58,10 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
         kontoBankoweGrid.addColumn(KontoBankowe::isAktywne).setHeader("Aktywne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         kontoBankoweGrid.addColumn(KontoBankowe::isDomyslne).setHeader("Domyslne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         kontoBankoweGrid.addColumn(KontoBankowe::isWirtualne).setHeader("Wirtualne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
-        kontoBankoweGrid.addComponentColumn(item -> createVerifyButton(item,kontrahentList.get((int) (item.getIdKontrahent()-1)),kontoBankoweRepository,kontrahentRepository, service)).setHeader("Button").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
+        kontoBankoweGrid.addComponentColumn(item -> createVerifyButton(item,kontrahentList.get((int) (item.getIdKontrahent()-1)),kontoBankoweRepository, service)).setHeader("Button").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         add(kontoBankoweGrid);
     }
-    private Button createVerifyButton(KontoBankowe kontoBankowe, Kontrahent kontrahent, KontoBankoweRepository kontoBankoweRepository, KontrahentRepository kontrahentRepository, KontoBankoweService service) {
+    private Button createVerifyButton(KontoBankowe kontoBankowe, Kontrahent kontrahent, KontoBankoweRepository kontoBankoweRepository, KontoBankoweService service) {
         String stan = kontoBankowe.getStanWeryfikacji();
         String stanWeryfikacji;
 
@@ -71,26 +72,23 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
         } else {
             stanWeryfikacji = "zweryfikowany";
         }
-        String date = "";
+        String date;
         if(kontoBankowe.getDataWeryfikacji() == null){
             date = "Brak weryfikacji";
         } else {
             date = kontoBankowe.getDataWeryfikacji().toString();
         }
-        @SuppressWarnings("unchecked")
+
         Button button = new Button(stanWeryfikacji, buttonClickEvent -> {
             try {
                 service.updateAccount(kontoBankowe, kontrahent,kontoBankoweRepository,service);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
+            UI.getCurrent().getPage().reload();
         });
         button.getElement().setProperty("title",date);
         return button;
-    }
-
-    private void updateDatabase(KontoBankowe kontoBankowe, String stanWeryfikacji){
-
     }
 
     @Override
