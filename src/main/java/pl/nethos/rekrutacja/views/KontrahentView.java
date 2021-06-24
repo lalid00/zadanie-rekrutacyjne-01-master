@@ -8,8 +8,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import pl.nethos.rekrutacja.factory.ButtonFactory;
 import pl.nethos.rekrutacja.konto.KontoBankowe;
 import pl.nethos.rekrutacja.konto.KontoBankoweRepository;
 import com.vaadin.flow.component.button.Button;
@@ -24,9 +27,7 @@ import java.util.List;
 
 @Route("ListaKontKontrahenta")
 public class KontrahentView extends VerticalLayout implements HasUrlParameter<Long>{
-
-
-
+    Logger log = LoggerFactory.getLogger(KontrahentView.class);
 
     @Autowired
     public KontrahentView(KontoBankoweRepository kontoBankoweRepository, KontrahentRepository kontrahentRepository){
@@ -58,38 +59,10 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
         kontoBankoweGrid.addColumn(KontoBankowe::isAktywne).setHeader("Aktywne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         kontoBankoweGrid.addColumn(KontoBankowe::isDomyslne).setHeader("Domyslne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         kontoBankoweGrid.addColumn(KontoBankowe::isWirtualne).setHeader("Wirtualne").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
-        kontoBankoweGrid.addComponentColumn(item -> createVerifyButton(item,kontrahentList.get((int) (item.getIdKontrahent()-1)),kontoBankoweRepository, service)).setHeader("Button").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
+        kontoBankoweGrid.addComponentColumn(item -> ButtonFactory.createVerifyButton(item,kontrahentList.get((int) (item.getIdKontrahent()-1)),kontoBankoweRepository, service)).setHeader("Button").setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
         add(kontoBankoweGrid);
     }
-    private Button createVerifyButton(KontoBankowe kontoBankowe, Kontrahent kontrahent, KontoBankoweRepository kontoBankoweRepository, KontoBankoweService service) {
-        String stan = kontoBankowe.getStanWeryfikacji();
-        String stanWeryfikacji;
 
-        if(stan == null){
-            stanWeryfikacji = "nieokreslony";
-        } else if (stan.equals("0")){
-            stanWeryfikacji = "bledne konto";
-        } else {
-            stanWeryfikacji = "zweryfikowany";
-        }
-        String date;
-        if(kontoBankowe.getDataWeryfikacji() == null){
-            date = "Brak weryfikacji";
-        } else {
-            date = kontoBankowe.getDataWeryfikacji().toString();
-        }
-
-        Button button = new Button(stanWeryfikacji, buttonClickEvent -> {
-            try {
-                service.updateAccount(kontoBankowe, kontrahent,kontoBankoweRepository,service);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            UI.getCurrent().getPage().reload();
-        });
-        button.getElement().setProperty("title",date);
-        return button;
-    }
 
     @Override
     public void setParameter(BeforeEvent event, Long parameter) throws NumberFormatException{
@@ -98,7 +71,9 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
     public String getIdFromUrl(){
         HttpServletRequest httpServletRequest = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest();
         String id = httpServletRequest.getRequestURL().toString();
-        return id.substring(id.length()-1);
+        log.info(id);
+        String head = "http://localhost:8080/ListaKontKontrahenta/";
+        return id.substring(head.length());
     }
 
 }
