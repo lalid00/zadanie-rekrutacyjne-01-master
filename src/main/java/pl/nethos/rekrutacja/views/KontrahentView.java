@@ -1,7 +1,5 @@
 package pl.nethos.rekrutacja.views;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -15,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import pl.nethos.rekrutacja.factory.ButtonFactory;
 import pl.nethos.rekrutacja.konto.KontoBankowe;
 import pl.nethos.rekrutacja.konto.KontoBankoweRepository;
-import com.vaadin.flow.component.button.Button;
+
 import pl.nethos.rekrutacja.konto.KontoBankoweService;
 import pl.nethos.rekrutacja.kontrahent.Kontrahent;
 import pl.nethos.rekrutacja.kontrahent.KontrahentRepository;
@@ -71,7 +69,7 @@ public class KontrahentView extends VerticalLayout implements HasUrlParameter<Lo
     public String getIdFromUrl(){
         HttpServletRequest httpServletRequest = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest();
         String id = httpServletRequest.getRequestURL().toString();
-        log.info(id);
+        log.info("Current URL" + id);
         String head = "http://localhost:8080/ListaKontKontrahenta/";
         return id.substring(head.length());
     }

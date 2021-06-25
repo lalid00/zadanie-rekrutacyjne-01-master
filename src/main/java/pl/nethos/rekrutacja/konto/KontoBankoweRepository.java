@@ -2,7 +2,6 @@ package pl.nethos.rekrutacja.konto;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.persister.collection.BasicCollectionPersister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -57,7 +56,7 @@ public class KontoBankoweRepository {
         } else if(status.equalsIgnoreCase("NIE")){
             finalStatus = "0";
         } else {
-            finalStatus = "2";
+            finalStatus = null;
         }
         return finalStatus;
     }
